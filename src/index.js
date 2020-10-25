@@ -1,9 +1,13 @@
-// import * as React from "react";
-// import * as ReactDOM from "react-dom";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import React from "./kreact/";
-import ReactDOM from "./kreact/react-dom";
+// import React from "./kreact/";
+// import ReactDOM from "./kreact/react-dom";
 // import Component from "./kreact/Component";
+// import * as React from './creact';
+// import * as ReactDOM from './creact/react-dom';
+// import * as React from './react';
+// import * as ReactDOM from './react/packages/react-dom';
 
 import "./index.css";
 
@@ -22,7 +26,7 @@ const jsx = (
 
 // 经过babel-loader编译，jsx就是React.createElement(...)函数执行
 ReactDOM.render(jsx, document.getElementById("root"));
-console.log("version-sy-log", React.version); //sy-log
+// console.log("version-sy-log", React.version); //sy-log
 
 // 原生标签节点
 // 文本节点
