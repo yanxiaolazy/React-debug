@@ -348,6 +348,12 @@ export function jsxDEV(type, config, maybeKey, source, self) {
 export function createElement(type, config, children) {
   let propName;
   console.log("ReactElement.js type: ", type);
+  console.log("ReactElement.js config: ",config);
+  console.log("ReactElement.js children: ", children);
+  //type: 标准节点， 函数组件, 类组件 (将标准节点， 函数组件， 类组件统称为节点， 下同)
+  //config: props(设置的各种属性, 包括key和ref), __source(对象。表示type 所在的文件，和行数), __self（未知）
+  //children: 由createElement方法返回的ReatElement对象（{$$typeof: REACT_ELEMENT_TYPE,type: type,key: key,ref: ref,props: props,_owner: owner,}）
+  
   // Reserved names are extracted
   const props = {};
 
@@ -357,8 +363,11 @@ export function createElement(type, config, children) {
   let source = null;
 
   if (config != null) {
+    //366 ~ 381 取出config中的ref, key, __source, __self, 没有则为null
     if (hasValidRef(config)) {
       ref = config.ref;
+
+      console.log('__DEV__: ', __DEV__);
 
       if (__DEV__) {
         warnIfStringRefCannotBeAutoConverted(config);
@@ -370,40 +379,42 @@ export function createElement(type, config, children) {
 
     self = config.__self === undefined ? null : config.__self;
     source = config.__source === undefined ? null : config.__source;
+
     // Remaining properties are added to a new props object
+    //剩余属性保持不变的添加到新的props对象
     for (propName in config) {
       if (
-        hasOwnProperty.call(config, propName) &&
-        !RESERVED_PROPS.hasOwnProperty(propName)
+        hasOwnProperty.call(config, propName) &&//先判断for..in出来的属性在config有没有
+        !RESERVED_PROPS.hasOwnProperty(propName)//接着，再判断这个属性是不是key, ref, __source, __self
       ) {
-        props[propName] = config[propName];
+        props[propName] = config[propName];//满足条件的属性放到新的容器对象里
       }
     }
   }
 
   // Children can be more than one argument, and those are transferred onto
   // the newly allocated props object.
-  const childrenLength = arguments.length - 2;
-  if (childrenLength === 1) {
+  const childrenLength = arguments.length - 2;//减去type和config
+  if (childrenLength === 1) {//如果只有一个子组件或元素，接直接传递
     props.children = children;
-  } else if (childrenLength > 1) {
-    const childArray = Array(childrenLength);
+  } else if (childrenLength > 1) {//如果不止一个子组件或元素
+    const childArray = Array(childrenLength);//创建一个和children一样长度的数组
     for (let i = 0; i < childrenLength; i++) {
-      childArray[i] = arguments[i + 2];
+      childArray[i] = arguments[i + 2];//从config后的第一个children开始取，并放到数组中
     }
     if (__DEV__) {
-      if (Object.freeze) {
-        Object.freeze(childArray);
+      if (Object.freeze) {//是否有这个方法Object.freeze。红宝书上描述为能力检测
+        Object.freeze(childArray);//冻结childArray变为只读
       }
     }
-    props.children = childArray;
+    props.children = childArray;//将props.chrildren指向childArray
   }
 
   // Resolve default props
-  if (type && type.defaultProps) {
+  if (type && type.defaultProps) {//如果有节点,并且有这个属性（是个对象）
     const defaultProps = type.defaultProps;
     for (propName in defaultProps) {
-      if (props[propName] === undefined) {
+      if (props[propName] === undefined) {//判断传入的config中是否有这个属性，没有则使用defaultProps定义的属性
         props[propName] = defaultProps[propName];
       }
     }
@@ -437,14 +448,14 @@ export function createElement(type, config, children) {
  * Return a function that produces ReactElements of a given type.
  * See https://reactjs.org/docs/react-api.html#createfactory
  */
-export function createFactory(type) {
+export function createFactory(type) {//已废弃
   const factory = createElement.bind(null, type);
   // Expose the type on the factory and the prototype so that it can be
   // easily accessed on elements. E.g. `<Foo />.type === Foo`.
   // This should not be named `constructor` since this may not be the function
   // that created the element, and it may not even be a constructor.
   // Legacy hook: remove it
-  factory.type = type;
+  factory.type = type;//{}.type === type
   return factory;
 }
 
@@ -466,7 +477,7 @@ export function cloneAndReplaceKey(oldElement, newKey) {
  * Clone and return a new ReactElement using element as the starting point.
  * See https://reactjs.org/docs/react-api.html#cloneelement
  */
-export function cloneElement(element, config, children) {
+export function cloneElement(element, config, children) {//通过element克隆返回一个原始props和新的props浅合并后的ReactElement,可以克隆原始key和ref（前提是config中没有新的key和ref)
   invariant(
     !(element === null || element === undefined),
     'React.cloneElement(...): The argument must be a React element, but you passed %s.',
@@ -547,7 +558,7 @@ export function cloneElement(element, config, children) {
 export function isValidElement(object) {
   return (
     typeof object === 'object' &&
-    object !== null &&
+    object !== null &&//排除null， typeof null 为'object'
     object.$$typeof === REACT_ELEMENT_TYPE
   );
 }

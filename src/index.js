@@ -11,16 +11,43 @@ import * as ReactDOM from "react-dom";
 
 import "./index.css";
 
-function FunctionComponent(props) {
-  return <div className="border">FunctionComponent-{props.name}</div>;
+class ClassComponent extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return(
+      <div className='class-component'>
+        {/* <span> */}
+          {/* <br /> */}
+          {/* {this.props.name} */}
+        {/* </span> */}
+      </div>
+    );
+  }
 }
+ClassComponent.defaultProps = {
+  name: 'default props',
+  id: '233'
+}
+
+function FunctionComponent(props) {
+  return <p className="function-component border">FunctionComponent-{props.name}</p>;
+}
+
+FunctionComponent.defaultProps = {
+  name: 'default props'
+}
+
 
 const jsx = (
   <div className="border">
-    <h1>慢 慢 慢</h1>
-    <p>开课吧</p>
-    <a href="https://www.kaikeba.com/">开课吧</a>
-    <FunctionComponent name="函数组件" />
+    {/* <h1>慢 慢 慢</h1> */}
+    {/* <p>开课吧</p> */}
+    {/* <a href="https://www.kaikeba.com/">开课吧</a> */}
+    <FunctionComponent ><p></p></FunctionComponent>
+    {/* <ClassComponent /> */}
   </div>
 );
 
